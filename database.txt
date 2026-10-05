@@ -1,0 +1,105 @@
+create database if not exists clients;
+use clients;
+create table client(
+codeclient int primary key,
+nom varchar(40),
+prenom varchar(40),
+adresse varchar(50),
+ville varchar(40),
+telephone int 
+);
+create table commande (
+numc int primary key ,
+datee int ,
+codeclient int,
+Foreign key (codeclient) references client(codeclient)
+);
+create table article (
+codeA int primary key,
+nom varchar(45) ,
+QTS int ,
+prix float ,
+coleur varchar(45),
+prixvent float 
+);
+create table ligne_commande(
+numc int ,
+codeA int ,
+QteComm int,
+prix_total_comande float,
+Foreign key (numc) references commande(numc),
+Foreign key (codeA) references article(codeA)
+);
+create table fournisseur (
+cofeF int  primary key ,
+nom varchar (45),
+adresse varchar (45),
+ville varchar (45)
+);
+create table entreprise_distrubution (
+nom_entreprise varchar(45) primary key,
+telephone int ,
+fax int ,
+cofeF int,
+Foreign key (cofeF) references fournisseur(cofeF)
+);
+create table livraison (
+num int  primary key ,
+datee int ,
+codeA int ,
+Qtelivr int ,
+nom_entreprise varchar(45),
+Foreign key (codeA) references article(codeA),
+Foreign key (nom_entreprise) references  entreprise_distrubution(nom_entreprise)
+);
+select count(*) as total_clients from client ;
+select count(*) as total_articls from article ;
+select sum(QteComm) from ligne_commande
+where codeA = 7 ; 
+select codeA, count(*) as ordered 
+from ligne_commande
+group by codeA ;
+select * from article where prixvent > (select avg (prixvent) from article ); 
+select * from article where ( coleur = 'rouge' and prixvent >=250 or coleur = 'bleue') ;
+select * from article where prix <=20 
+order by QTS desc;
+select nom , (prixvent - prix ) as marge_beneficiaree from article;
+select nom , (prixvent - prix ) as marge from article where prix<100;
+select nom , (prixvent - prix ) as marge from article where prix<10 order by marge ASC;
+select AVG(QTS) as moyenne_stk from article;
+select count(DISTINCT coleur) from article;
+select sum(QTS)as total_stq from article;
+
+select c.nom,c.prenom,cmd.datee 
+from client c
+join commande cmd on c.codeclient=cmd.codeclient;
+select c.nom , c.prenom 
+from client c 
+left join commande cmd on c.codeclient=cmd.codeclient;
+select * from client c 
+right join commande cmd on 
+c.codeclient=cmd.codeclient;
+select c.nom, a.nom ,lc.QteComm 
+from client c 
+join commande cmd on c.codeclient=cmd.codeclient
+join ligne_commande lc on cmd.numc=lc.numc
+join article a on lc.codeA=a.codeA;
+select distinct  * from client c 
+join commande cmd on c.codeclient = cmd.codeclient 
+where c.ville='tanger';
+select a.nom from article a 
+join ligne_commande lc on a.codeA=lc.codeA
+where lc.QteComm>a.QTS;
+
+
+
+ 
+
+
+
+
+
+
+
+
+
